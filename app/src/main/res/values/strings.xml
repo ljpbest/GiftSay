@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GiftSay</string>
+    <string name="category">分类</string>
+    <string name="home">指南</string>
+    <string name="select">热门</string>
+    <string name="profile">我的</string>
+    <string name="home_hand">礼物说</string>
+</resources>

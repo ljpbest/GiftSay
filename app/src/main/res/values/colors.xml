@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="txt_select">#FF2D47</color>
+    <color name="txt_nomarl">#A8AAAA</color>
+    <color name="frgment_hand_background">#FF2D47</color>
+    <color name="white">#FFFFFF</color>
+    <color name="likebackcolor">#70000000</color>
+    <color name="expandtextcolor">#FFC676</color>
+</resources>

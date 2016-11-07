@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:gravity="center_vertical">
+    <TextView
+        android:id="@+id/home_choice_expandgroup_textcolor"
+        android:layout_alignParentLeft="true"
+        android:layout_width="5dp"
+        android:layout_centerVertical="true"
+        android:background="@color/frgment_hand_background"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_toRightOf="@+id/home_choice_expandgroup_textcolor"
+        android:id="@+id/home_choice_expandgroup_texttime"
+        android:layout_marginLeft="10dp"
+        android:gravity="center_vertical"
+        android:text="跟新时间"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+</RelativeLayout>
