@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +43,7 @@ import ljp.qianfeng.com.giftsay.persenter.impl.HomeChoiceListPresenter;
 import ljp.qianfeng.com.giftsay.ui.adapter.HomeChoiceExpandAdapter;
 import ljp.qianfeng.com.giftsay.ui.adapter.HomeExpandHandBaseAdapter;
 import ljp.qianfeng.com.giftsay.ui.adapter.HomeExpandHandPageAdapter;
+import ljp.qianfeng.com.giftsay.ui.adapter.HomeExpandHndRecycleAdapter;
 import ljp.qianfeng.com.giftsay.ui.view.IFragmentHomeView;
 
 /**
@@ -62,6 +65,8 @@ public class CompetitiveFragment extends Fragment implements IFragmentHomeView {
     private GridView handgrid;
     private HomeExpandHandPageAdapter homeExpandHandPageAdapter;
     private HomeExpandHandBaseAdapter homeExpandHandBaseAdapter;
+    private RecyclerView recycleview;
+    private HomeExpandHndRecycleAdapter homeExpandHndRecycleAdapter;
 
     public static CompetitiveFragment newInstance(int id){
         CompetitiveFragment competitiveFragment=new CompetitiveFragment();
@@ -108,11 +113,13 @@ public class CompetitiveFragment extends Fragment implements IFragmentHomeView {
         View handview=inflater.inflate(R.layout.fragment_home_expandlist_hand,null);
         handviewpager = (ViewPager)handview.findViewById(R.id.fragment_home_expandlist_hand_viewpage);
         hand_tablayout = (TabLayout)handview.findViewById(R.id.fragment_home_expandlist_hand_tablayout);
-        handgrid = (GridView)handview.findViewById(R.id.fragment_home_expandlist_hand_gridview);
+        recycleview = (RecyclerView)handview.findViewById(R.id.fragment_home_expandlist_hand_recyclerview);
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false);
+        recycleview.setLayoutManager(linearLayoutManager);
         homeExpandHandPageAdapter = new HomeExpandHandPageAdapter(context);
         handviewpager.setAdapter(homeExpandHandPageAdapter);
-        homeExpandHandBaseAdapter = new HomeExpandHandBaseAdapter(context);
-        handgrid.setAdapter(homeExpandHandBaseAdapter);
+        homeExpandHndRecycleAdapter = new HomeExpandHndRecycleAdapter(context);
+        recycleview.setAdapter(homeExpandHndRecycleAdapter);
         expandableListView.addHeaderView(handview);
         homeChoiceHandPresenter.queryData(HttpUrlPath.HOME_CHOICE_HANDPAGER);
         homeChoiceListPresenter.queryData(HttpUrlPath.HOME_CHOICE_LISTPAGER);
@@ -131,8 +138,8 @@ public class CompetitiveFragment extends Fragment implements IFragmentHomeView {
         }else if(navigation instanceof ChoiceListBean){
             ChoiceListBean choiceListBean= (ChoiceListBean) navigation;
             List<ChoiceListBean.DataBean.SecondaryBannersBean> cclist=choiceListBean.getData().getSecondary_banners();
-            homeExpandHandBaseAdapter.setList(cclist);
-            homeExpandHandBaseAdapter.notifyDataSetChanged();
+            homeExpandHndRecycleAdapter.setList(cclist);
+            homeExpandHndRecycleAdapter.notifyDataSetChanged();
         }else if(navigation instanceof ChoiceContentBean){
             ChoiceContentBean choiceContentBean= (ChoiceContentBean) navigation;
             List<ChoiceContentBean.DataBean.ItemsBean> maplist=choiceContentBean.getData().getItems();
