@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.view.animation.Animation;
+import android.widget.AbsListView;
 import android.widget.ExpandableListView;
 import android.widget.GridView;
 import android.widget.HorizontalScrollView;
@@ -45,6 +47,7 @@ import ljp.qianfeng.com.giftsay.ui.adapter.HomeExpandHandBaseAdapter;
 import ljp.qianfeng.com.giftsay.ui.adapter.HomeExpandHandPageAdapter;
 import ljp.qianfeng.com.giftsay.ui.adapter.HomeExpandHndRecycleAdapter;
 import ljp.qianfeng.com.giftsay.ui.view.IFragmentHomeView;
+import ljp.qianfeng.com.giftsay.ui.view.MyExpndListView;
 
 /**
  * Created by Administrator on 2016/11/5 0005.
@@ -53,21 +56,19 @@ public class CompetitiveFragment extends Fragment implements IFragmentHomeView {
     private final static String KEY="content";
     private Context context;
     private int page;
+    private int con;
     private HomeChoiceHandPresenter homeChoiceHandPresenter;
     private HomeChoiceListPresenter homeChoiceListPresenter;
     private HomeChoiceContentPresenter homeChoiceContentPresenter;
-    private ExpandableListView expandableListView;
+    private MyExpndListView expandableListView;
     private HomeChoiceExpandAdapter homeChoiceExpandAdapter;
-    private Map<String,List<ChoiceContentBean.DataBean.ItemsBean>> map;
-    private List<String> keylist;
     private ViewPager handviewpager;
     private TabLayout hand_tablayout;
-    private GridView handgrid;
     private HomeExpandHandPageAdapter homeExpandHandPageAdapter;
-    private HomeExpandHandBaseAdapter homeExpandHandBaseAdapter;
     private RecyclerView recycleview;
     private HomeExpandHndRecycleAdapter homeExpandHndRecycleAdapter;
-
+    private ImageView refreshimage;
+    private boolean istop;
     public static CompetitiveFragment newInstance(int id){
         CompetitiveFragment competitiveFragment=new CompetitiveFragment();
         Bundle bundle=new Bundle();
@@ -86,6 +87,7 @@ public class CompetitiveFragment extends Fragment implements IFragmentHomeView {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         page=20;
+        istop=false;
         homeChoiceHandPresenter=new HomeChoiceHandPresenter();
         homeChoiceHandPresenter.setFragmentHomeData(this);
         homeChoiceListPresenter=new HomeChoiceListPresenter();
@@ -98,10 +100,10 @@ public class CompetitiveFragment extends Fragment implements IFragmentHomeView {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Bundle arguments = getArguments();
-        int con=arguments.getInt(KEY);
+        con=arguments.getInt(KEY);
         String path=getPath(con,page);
         View view = inflater.inflate(R.layout.fragment_home_cometitive,null);
-        expandableListView = (ExpandableListView)view.findViewById(R.id.home_choice_content_expandableList);
+        expandableListView = (MyExpndListView)view.findViewById(R.id.home_choice_content_expandableList);
         homeChoiceExpandAdapter = new HomeChoiceExpandAdapter(context);
         expandableListView.setAdapter(homeChoiceExpandAdapter);
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
@@ -111,6 +113,7 @@ public class CompetitiveFragment extends Fragment implements IFragmentHomeView {
             }
         });
         View handview=inflater.inflate(R.layout.fragment_home_expandlist_hand,null);
+        refreshimage = (ImageView)handview.findViewById(R.id.home_choice_content_refreshimge);
         handviewpager = (ViewPager)handview.findViewById(R.id.fragment_home_expandlist_hand_viewpage);
         hand_tablayout = (TabLayout)handview.findViewById(R.id.fragment_home_expandlist_hand_tablayout);
         recycleview = (RecyclerView)handview.findViewById(R.id.fragment_home_expandlist_hand_recyclerview);
@@ -124,6 +127,40 @@ public class CompetitiveFragment extends Fragment implements IFragmentHomeView {
         homeChoiceHandPresenter.queryData(HttpUrlPath.HOME_CHOICE_HANDPAGER);
         homeChoiceListPresenter.queryData(HttpUrlPath.HOME_CHOICE_LISTPAGER);
         homeChoiceContentPresenter.queryData(path);
+        expandableListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+                switch (i){
+                    case 0:
+                        if(istop&&expandableListView.isup()){
+                            refreshimage.setVisibility(View.VISIBLE);
+                            page=page+20;
+                            String path=getPath(con,page);
+                            homeChoiceContentPresenter.queryData(path);
+                        }else {
+                            refreshimage.setVisibility(View.GONE);
+                        }
+                        break;
+                    case 1:
+                        if(istop){
+                            refreshimage.setVisibility(View.VISIBLE);
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+                  LogUtils.log(CompetitiveFragment.class,i+"");
+                LogUtils.log(CompetitiveFragment.class,i1+"");
+                if(i==0){
+                    istop=true;
+                }else {
+                    istop=false;
+                }
+            }
+        });
+
         return view;
     }
 
@@ -143,8 +180,8 @@ public class CompetitiveFragment extends Fragment implements IFragmentHomeView {
         }else if(navigation instanceof ChoiceContentBean){
             ChoiceContentBean choiceContentBean= (ChoiceContentBean) navigation;
             List<ChoiceContentBean.DataBean.ItemsBean> maplist=choiceContentBean.getData().getItems();
-            map=new HashMap<>();
-            keylist=new ArrayList<>();
+            Map<String,List<ChoiceContentBean.DataBean.ItemsBean>> map=new HashMap<>();
+            List<String> keylist=new ArrayList<>();
             for(int i=0,len=maplist.size();i<len;i++){
                 int time=maplist.get(i).getPublished_at();
                 String timestr=gettime(time*1000);

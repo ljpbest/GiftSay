@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,14 +33,16 @@ public class HomeChoiceExpandAdapter extends BaseExpandableListAdapter {
     public HomeChoiceExpandAdapter(Context context) {
         this.context = context;
         layoutInflater=LayoutInflater.from(context);
+        map=new HashMap<>();
+        keylist=new ArrayList<>();
     }
 
     public void setMap(Map<String, List<ChoiceContentBean.DataBean.ItemsBean>> map) {
-        this.map = map;
+        this.map.putAll(map);
     }
 
     public void setKeylist(List<String> keylist) {
-        this.keylist = keylist;
+        this.keylist.addAll(keylist);
     }
 
     @Override
